@@ -19,7 +19,9 @@
  		<guava.version>27.1-jre</guava.version>
  		<caffeine.version>2.7.0</caffeine.version>
  		<cache2k.version>1.2.1.Final</cache2k.version>
+ 		<ohc.version>0.7.0</ohc.version>
  		<bytebuddy.version>1.9.12</bytebuddy.version>
+ 		<shade.version>3.2.1</shade.version>
 	</properties>
 	
   
@@ -74,6 +76,13 @@
         <version>${cache2k.version}</version>
         <type>pom</type>
       </dependency>		
+      
+	<dependency>
+	  <groupId>org.caffinitas.ohc</groupId>
+	  <artifactId>ohc-core</artifactId>
+	  <version>${ohc.version}</version>
+	</dependency>
+      
 
 		<dependency>
 	        <artifactId>byte-buddy-agent</artifactId>
@@ -129,6 +138,40 @@
 					<target>${compiler-target.version}</target>
 				</configuration>
 			</plugin>
+
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-shade-plugin</artifactId>
+	        <version>${shade.version}</version>	        	        
+	        <executions>	        
+	          <execution>
+	            <phase>package</phase>
+	            <goals>
+	              <goal>shade</goal>
+	            </goals>
+	            <configuration>
+	            	
+	            	<shadedArtifactId></shadedArtifactId>
+		             <transformers>
+		                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+		                  <mainClass>com.heliosapm.benchmark.maps.MapBenchmark</mainClass>
+		                </transformer>
+		                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+		              </transformers>	
+		              <filters>
+				        <filter>
+				            <artifact>*:*</artifact>
+				            <excludes>
+				                <exclude>META-INF/*.SF</exclude>
+				                <exclude>META-INF/*.DSA</exclude>
+				                <exclude>META-INF/*.RSA</exclude>
+				            </excludes>
+				        </filter>
+		              </filters>            		                          
+	            </configuration>
+	          </execution>
+	        </executions>
+	      </plugin>				
 
     
       
